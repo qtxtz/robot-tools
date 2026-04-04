@@ -1,4 +1,5 @@
 var fs = require('fs');
+var Path = require('path');
  var config = require('./config.js');
  var request = require('request');
  var utils = require('./utils.js');
@@ -65,16 +66,17 @@ var fs = require('fs');
  	request(uri).pipe(stream).on('close', callback);
  }
 
- function makeLocal(makerpath) {
+ function makeLocal(makerPath) {
  	fs.copyFileSync(config.wgtpath, config.wgtpath4app);
  	var path = config.resourcespath;
  	var appid = config.manifest.appid;
- 	var cmd = "cd " + makerpath + " \n" +
- 		"node apk-maker.js " + appid + ' ' + path;
+	
+	var makerDir = Path.dirname(makerPath);
+ 	var cmd = "cd " + makerDir + "\n"
+ 		    + "node " + makerPath + " "+ config.wgtpath4app;
 
- 	var jsPath = makerpath + '/apk-maker.js';
- 	if (!fs.existsSync(jsPath)) {
- 		console.error("😈打包脚本未找到：" + jsPath);
+ 	if (!fs.existsSync(makerPath)) {
+ 		console.error("😈打包脚本未找到：" + makerPath);
  		return;
  	}
 
